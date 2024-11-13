@@ -1,40 +1,94 @@
-const TransactionsModel = require('../Models/Transactions.model');
+const TrasnactionsModel = require('../Models/Transactions.Model');
 
 class TransactionsService {
 
-    constructor () {}
-
-    async createTransaction(data){
-        const transaction = await TransactionsModel.create(data);
-        return transaction;
+    async createTransaction(data) {
+        try {
+            const transaction = await TrasnactionsModel.create(data);
+            return transaction;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async getTransactions(){
-        const transactions = await TransactionsModel.findAll();
-        return transactions;
+    async getTranscationByUserDni(dni) {
+        try {
+            const transactions = await TrasnactionsModel.findAll({
+                where: {
+                    user_dni: dni
+                }
+            });
+            return transactions;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async getTransaction(id){
-        const transaction = await TransactionsModel.findByPk(id);
-        return transaction;
+    async getTransactionAmountByUserDni(dni) {
+        try {
+            const transactions = await TrasnactionsModel.findAll({
+                where: {
+                    user_dni: dni
+                }
+            });
+            let amount = 0;
+            transactions.forEach(transaction => {
+                amount += transaction.amount;
+            });
+            return amount;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async updateTransaction(id, data){
-        const transaction = await TransactionsModel.update(data, {
-            where: {
-                id: id
+    async getTransactionById(id) {
+        try {
+            const transaction = await TrasnactionsModel.findByPk(id);
+            return transaction;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async getTransactionsByDate(start, end) {
+        try {
+            const transactions = await TrasnactionsModel.findAll({
+                where: {
+                    date: {
+                        [Op.between]: [start, end]
+                    }
+                }
+            });
+            return transactions;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async updateTransaction(id, data) {
+        try {
+            const transaction = await TrasnactionsModel.findByPk(id);
+            if (!transaction) {
+                return null;
             }
-        });
-        return transaction;
+            await transaction.update(data);
+            return transaction;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async deleteTransaction(id){
-        const transaction = await TransactionsModel.destroy({
-            where: {
-                id: id
+    async deleteTransaction(id) {
+        try {
+            const transaction = await TrasnactionsModel.findByPk(id);
+            if (!transaction) {
+                return null;
             }
-        });
-        return transaction;
+            await transaction.destroy();
+            return transaction;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 }
 

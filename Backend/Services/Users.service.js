@@ -1,42 +1,62 @@
-const UserModel = require('../Models/Users.model');
+const UsersModel = require('../Models/User.Model');
+const bcrypt = require('bcrypt');
 
+class UsersService {
 
-class UserService {
-
-    constructor () {}
-
-    async createUser(data){
-        const user = await UserModel.create(data);
-        return user;
+    async createUser(data) {
+        try {
+            data.password = await bcrypt.hash(data.password, 10);
+            const user = await UsersModel.create(data);
+            return user;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async getUsers(){
-        const users = await UserModel.findAll();
-        return users;
+    async getUsers() {
+        try {
+            const users = await UsersModel.findAll();
+            return users;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async getUser(dni){
-        const user = await UserModel.findByPk(dni);
-        return user;
+    async getUserById(dni) {
+        try {
+            const user = await UsersModel.findByPk(dni);
+            return user;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async updateUser(dni, data){
-        const user = await UserModel.update(data, {
-            where: {
-                dni: dni
+    async updateUser(dni, data) {
+        try {
+            const user = await UsersModel.findByPk(dni);
+            if (!user) {
+                return null;
             }
-        });
-        return user;
+            await user.update(data);
+            return user;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
-    async deleteUser(dni){
-        const user = await UserModel.destroy({
-            where: {
-                dni: dni
+    async deleteUser(dni) {
+        try {
+            const user = await UsersModel.findByPk(dni);
+            if (!user) {
+                return null;
             }
-        });
-        return user;
+            await user.destroy();
+            return user;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
+
 }
 
-module.exports = UserService;
+module.exports = UsersService;

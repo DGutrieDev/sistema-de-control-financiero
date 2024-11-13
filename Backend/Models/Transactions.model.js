@@ -1,50 +1,56 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../Config/connection');
-const Users = require('./Users.model');
+const db = require('../config/db.config');
+const UsersModel = require('./User.Model');
 
-const Transactions = sequelize.define('Transactions',{
+const TransactionsModel = db.define('Transactions', {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
     },
-    user_id: {
+    user_dni: {
         type: DataTypes.STRING,
         allowNull: false,
-        model: 'Users',
-        key: 'dni'
+        references: {
+            model: UsersModel,
+            key: 'dni'
+        }
     },
     amount: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL,
         allowNull: false
-    },
-    type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        Enum: ['earnings', 'expenses']
     },
     date: {
         type: DataTypes.DATE,
         allowNull: false
     },
+    type:{
+        ENUM: ['deposit', 'withdrawal'],
+        allowNull: false
+    },
     description: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
     },
-    category_name: {
-        type: DataTypes.STRING,
+    balance: {
+        type: DataTypes.DECIMAL,
         allowNull: false
     }
-},{
+}, {
     timestamps: false,
-    tableName: 'transactions'
-});
+    tableName: 'Transactions'
+}
+);
 
-Users.hasMany(Transactions, { foreignKey: 'user_id', sourceKey: 'dni' });
+UsersModel.hasMany(TransactionsModel, { foreignKey: 'user_dni' });
+TransactionsModel.belongsTo(UsersModel, { foreignKey: 'user_dni' });
 
-Transactions.sync({ force: false }).then(() => {
-    console.log('Table Transactions created');
-});
+TransactionsModel.sync(
+    { force: false }
+).then(() => {
+    console.log('Transactions table created');
+}
+);
 
-module.exports = Transactions;
+module.exports = TransactionsModel;
