@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const db = require('../config/db.config');
+const db = require('../config/connection');
 const UsersModel = require('./User.Model');
 
 const TransactionsModel = db.define('Transactions', {
@@ -21,27 +21,21 @@ const TransactionsModel = db.define('Transactions', {
         type: DataTypes.DECIMAL,
         allowNull: false
     },
-    date: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-    type:{
-        ENUM: ['deposit', 'withdrawal'],
-        allowNull: false
-    },
-    description: {
+    type: {
         type: DataTypes.STRING,
+        allowNull: false,
+        ENUM: ['DEPOSIT', 'WITHDRAWAL']
+        
+    },
+    year: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
-    balance: {
-        type: DataTypes.DECIMAL,
+    month: {
+        type: DataTypes.INTEGER,
         allowNull: false
     }
-}, {
-    timestamps: false,
-    tableName: 'Transactions'
-}
-);
+}, { timestamps: false, tableName: 'Transactions' });
 
 UsersModel.hasMany(TransactionsModel, { foreignKey: 'user_dni' });
 TransactionsModel.belongsTo(UsersModel, { foreignKey: 'user_dni' });
@@ -50,7 +44,6 @@ TransactionsModel.sync(
     { force: false }
 ).then(() => {
     console.log('Transactions table created');
-}
-);
+});
 
 module.exports = TransactionsModel;

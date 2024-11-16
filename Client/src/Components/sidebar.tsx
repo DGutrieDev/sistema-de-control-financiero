@@ -1,59 +1,70 @@
 import user_image from '../assets/images/profile-picture.jpeg';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
+import { useAuth } from '../Auth/AuthContext';
+import '../styles/sidebar.css';
 
 const Sidebar = () => {
     const menuBtnRef = useRef<HTMLDivElement>(null);
+    const { isAuth } = useAuth();
+ 
+     // Si el usuario no está autenticado, no renderiza el Sidebar
+     if (!isAuth) return null;
+
+    const toggleSidebar = useCallback(() => {
+        const sidebar = document.querySelector(".sidebar") as HTMLElement;
+        sidebar.classList.toggle("active");
+    }, []);
+
+    const toggleTheme = useCallback(() => {
+        const body = document.querySelector("body") as HTMLElement;
+        body.classList.toggle("dark");
+
+        const themeIcon = document.querySelector(".theme-icon") as HTMLElement;
+        if (body.classList.contains("dark")) {
+            themeIcon.classList.remove("ph-moon");
+            themeIcon.classList.add("ph-sun");
+        } else {
+            themeIcon.classList.remove("ph-sun");
+            themeIcon.classList.add("ph-moon");
+        }
+    }, []);
+
+    const handleMenuClick = useCallback((event: Event) => {
+        const item = event.currentTarget as HTMLElement;
+        const submenu = item.querySelector(".submenu") as HTMLElement;
+
+        const isActive = item.classList.contains("active"); // Verificar si está activo
+        const menuItems = document.querySelectorAll(".menu > ul > li");
+
+        menuItems.forEach((menuItem) => {
+            const submenu = menuItem.querySelector(".submenu") as HTMLElement;
+            menuItem.classList.remove("active");
+            submenu?.classList.remove("open");
+        });
+        if (!isActive && submenu) {
+            submenu.classList.add("open");
+            item.classList.add("active");
+        }
+    }, []);
 
     useEffect(() => {
         const menuItems = document.querySelectorAll(".menu > ul > li");
-
-        const handleClick = (event: Event) => {
-            const item = event.currentTarget as HTMLElement;
-            const submenu = item.querySelector(".submenu") as HTMLElement;
-
-            if (submenu && submenu.classList.contains("open")) {
-                submenu.classList.remove("open");
-                item.classList.remove("active");
-            } else {
-                menuItems.forEach((menuItem) => {
-                    const submenu = menuItem.querySelector(".submenu") as HTMLElement;
-                    menuItem.classList.remove("active");
-                    submenu?.classList.remove("open");
-                });
-                if (submenu) {
-                    submenu.classList.add("open");
-                    item.classList.add("active");
-                }
-            }
-        };
-
-        menuItems.forEach(item => {
-            item.addEventListener("click", handleClick);
-        });
-
-        const toggleSidebar = () => {
-            const sidebar = document.querySelector(".sidebar") as HTMLElement;
-            sidebar.classList.toggle("active");
-        };
-
         const menuBtn = menuBtnRef.current;
-        if (menuBtn) {
-            menuBtn.addEventListener("click", toggleSidebar);
-        }
+        const themeMode = document.querySelector(".theme_mode") as HTMLElement;
 
-        // Limpia los eventos al desmontar el componente
+        menuItems.forEach((item) => item.addEventListener("click", handleMenuClick));
+        if (menuBtn) menuBtn.addEventListener("click", toggleSidebar);
+        if (themeMode) themeMode.addEventListener("click", toggleTheme);
+
         return () => {
-            menuItems.forEach(item => {
-                item.removeEventListener("click", handleClick);
-            });
-            if (menuBtn) {
-                menuBtn.removeEventListener("click", toggleSidebar);
-            }
+            menuItems.forEach((item) => item.removeEventListener("click", handleMenuClick));
+            if (menuBtn) menuBtn.removeEventListener("click", toggleSidebar);
+            if (themeMode) themeMode.removeEventListener("click", toggleTheme);
         };
-    }, []);
+    }, [handleMenuClick, toggleSidebar, toggleTheme]);
 
     return (
-        <div className="sidebar">
+        <div className="sidebar active">
             <div className="menu-btn" ref={menuBtnRef}>
                 <i className="ph ph-caret-left"></i>
             </div>
@@ -74,6 +85,12 @@ const Sidebar = () => {
                             <a href="/#">
                                 <i className="icon ph-bold ph-house-simple"></i>
                                 <span className="text">Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a className="theme_mode">
+                                <i className="theme-icon ph ph-moon"></i>
+                                <span className="text">Change Mode</span>
                             </a>
                         </li>
                         <br />

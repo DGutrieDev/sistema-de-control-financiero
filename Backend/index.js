@@ -1,8 +1,12 @@
 const express = require('express');
 const app = express();
-const sequelize = require('./Config/connection');
-const userRoutes = require('./Routes/Users.routes');
-const TransactionsRoutes = require('./Routes/Transactions.routes');
+const sequelize = require('./config/connection');
+const userRoutes = require('./Routes/User.Routes');
+const TransactionsRoutes = require('./Routes/Transactions.Routes');
+const SavingsRoutes = require('./Routes/Savings.Routes');
+const cors = require('cors');
+
+app.use(cors());
 
 try {
     sequelize.authenticate();
@@ -14,6 +18,7 @@ try {
 app.use(express.json());
 app.use('/users', userRoutes);
 app.use('/transactions', TransactionsRoutes);
+app.use('/savings', SavingsRoutes);
 
 app.get('/', (req, res) => {
     res.send('System Backend is running');
