@@ -36,9 +36,6 @@ BalanceModel.belongsTo(UsersModel, { foreignKey: 'user_dni' });
 
 BalanceModel.sync(
     { force: false }
-).then(() => {
-    console.log('Balance table created');
-}
-);
+).then(() => {});
 
 module.exports = BalanceModel;

@@ -1,12 +1,13 @@
 const userController = require('../Controllers/Users.Controller');
 const express = require('express');
 const router = express.Router();
+const auth = require('../Auth/AuthMiddleware');
 
 router
-    .get('/:dni', userController.getUserById)
+    .get('/:dni',auth, userController.getUserById)
     .post('/', userController.createUser)
-    .put('/:dni', userController.updateUser)
-    .delete('/:dni', userController.deleteUser);
+    .put('/:dni',auth, userController.updateUser)
+    .delete('/:dni',auth, userController.deleteUser);
 
 
 module.exports = router;

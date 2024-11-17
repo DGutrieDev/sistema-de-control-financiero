@@ -42,8 +42,6 @@ TransactionsModel.belongsTo(UsersModel, { foreignKey: 'user_dni' });
 
 TransactionsModel.sync(
     { force: false }
-).then(() => {
-    console.log('Transactions table created');
-});
+).then(() => {});
 
 module.exports = TransactionsModel;

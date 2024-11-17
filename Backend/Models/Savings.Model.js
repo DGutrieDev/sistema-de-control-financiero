@@ -36,9 +36,6 @@ SavingsModel.belongsTo(UsersModel, { foreignKey: 'user_dni' });
 
 SavingsModel.sync(
     { force: false }
-).then(() => {
-    console.log('Savings table created');
-}
-);
+).then(() => {});
 
 module.exports = SavingsModel;

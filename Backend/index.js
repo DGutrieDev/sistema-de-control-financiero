@@ -1,31 +1,38 @@
+process.loadEnvFile();
 const express = require('express');
-const app = express();
-const sequelize = require('./config/connection');
-const userRoutes = require('./Routes/User.Routes');
-const TransactionsRoutes = require('./Routes/Transactions.Routes');
-const SavingsRoutes = require('./Routes/Savings.Routes');
 const cors = require('cors');
+const sequelize = require('./config/connection');
+const routes = require('./Routes/Index');
+const PORT = process.env.PORT || 5000;
+
+const app = express();
 
 app.use(cors());
-
-try {
-    sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-} catch (error) {
-    console.error('Unable to connect to the database:', error);
-}
-
 app.use(express.json());
-app.use('/users', userRoutes);
-app.use('/transactions', TransactionsRoutes);
-app.use('/savings', SavingsRoutes);
+
+app.use(routes);
 
 app.get('/', (req, res) => {
     res.send('System Backend is running');
 });
 
-app.listen(3000 || 5000, () => {
-    console.log('Server is running on port 3000');
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Internal Server Error', error: err.message });
 });
 
+const startServer = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Connection has been established successfully.');
 
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+        process.exit(1);
+    }
+};
+
+startServer();

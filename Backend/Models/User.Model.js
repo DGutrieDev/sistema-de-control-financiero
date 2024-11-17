@@ -23,10 +23,6 @@ const UsersModel = db.define('Users', {
     password: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    token: {
-        type: DataTypes.STRING,
-        allowNull: true
     }
 }, {
     timestamps: false,
@@ -36,9 +32,6 @@ const UsersModel = db.define('Users', {
 
 UsersModel.sync(
     { force: false }
-).then(() => {
-    console.log('Users table created');
-}
-);
+).then(() => {});
 
 module.exports = UsersModel;
