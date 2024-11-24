@@ -5,15 +5,17 @@ const client = redis.createClient({
     socket: {
         host: 'redis-13474.c283.us-east-1-4.ec2.redns.redis-cloud.com',
         port: 13474
-    }
+    },
 });
 
 (async () => {
     try {
         await client.connect();
         console.log('Connected to Redis');
+        
     } catch (error) {
         console.error('Error connecting to Redis:', error);
     }
 })();
 
+module.exports = client;

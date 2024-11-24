@@ -2,6 +2,7 @@ import "../styles/Access.css";
 import image from "../assets/images/bg-img.jpg";
 import { useState } from "react";
 import { createUsers } from "../services/apiServices";
+import Swal from "sweetalert2";
 
 const RegisterPage = () => {
   const [dni, setDni] = useState("");
@@ -9,6 +10,14 @@ const RegisterPage = () => {
   const [lastname, setlastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const clearInputs = () => {
+    setDni("");
+    setName("");
+    setlastname("");
+    setEmail("");
+    setPassword
+  }
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -26,13 +35,32 @@ const RegisterPage = () => {
       !user.email ||
       !user.password
     ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "All fields are required!",
+      });
       return;
     } else {
-      const response = await createUsers(user);
-      if (response){
-        window.location.href = "/login";
+      console.log(user);
+      const response = await createUsers(user) as any;
+      if (response.status === 201) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Your account has been created successfully!",
+        });
+        setTimeout(() => {
+          clearInputs();
+          window.location.href = "/";
+        }, 2000);
+      }else{
+        Swal.fire({
+          icon: "error",
+          title: "Oops... Something went wrong",
+          text: `${response.response.data.message}`,
+        });
       }
-      console.log(response);
     }
   };
 

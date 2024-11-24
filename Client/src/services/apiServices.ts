@@ -12,16 +12,18 @@ const api = axios.create({
 export const createUsers = async (data: any) => {
     try{
         const response = await api.post("/users", data);
-        return response.data;
+        console.log(response);
+        return response;
     }catch(err){
         console.log(err);
+        return err;
     }
 };
 
 export const getUserDNI = async (dni: string) => {
     try{
         const response = await api.get(`/users/${dni}`);
-        return response.data;
+        return response;
     }catch(err){
         console.log(err);
     }
@@ -30,7 +32,7 @@ export const getUserDNI = async (dni: string) => {
 export const updateUser = async (dni: string, data: any) => {
     try{
         const response = await api.put(`/users/${dni}`, data);
-        return response.data;
+        return response;
     }catch(err){
         console.log(err);
     }
@@ -39,7 +41,7 @@ export const updateUser = async (dni: string, data: any) => {
 export const deleteUser = async (dni: string) => {
     try{
         const response = await api.delete(`/users/${dni}`);
-        return response.data;
+        return response
     }catch(err){
         console.log(err);
     }
